@@ -12,7 +12,7 @@ export const getStoreUrl = async () => {
 
   return locale === DEFAULT_LOCALE
     ? domain
-    : `${domain}${localePrefixes[locale as Exclude<SupportedLocale, typeof DEFAULT_LOCALE>]}`;
+    : `${domain}${localePrefixes[locale as SupportedLocale]}`;
 };
 
 export const getStoreLocale = async (): Promise<string> => {
@@ -22,9 +22,7 @@ export const getStoreLocale = async (): Promise<string> => {
     return "";
   }
 
-  return localePrefixes[
-    locale as Exclude<SupportedLocale, typeof DEFAULT_LOCALE>
-  ];
+  return localePrefixes[locale as SupportedLocale];
 };
 
 // builds a full URL by joining a relative path to the store base URL avoiding incorrect slash handling.

@@ -27,9 +27,7 @@ export function LocaleSwitchModal({
   const marketsByContinent = {
     asia_pacific: [], // currently there are no supported countries within that continent.
     europe: markets.filter((market) => market.continent === "Europe"),
-    north_america: markets.filter(
-      (market) => market.continent === "North America",
-    ),
+    north_america: [], // currently there are no supported countries within that continent.
   };
 
   return createPortal(
