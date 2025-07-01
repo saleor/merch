@@ -26,6 +26,7 @@ export const baseCodegenConfig: CodegenConfig["config"] = {
     Day: "number",
     Decimal: "number",
     GenericScalar: "unknown",
+    Hour: "number",
     JSON: "unknown",
     JSONString: "string",
     Metadata: "Record<string, string>",
