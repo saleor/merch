@@ -14,9 +14,7 @@ import { MobileNavigation } from "@/components/mobile-navigation";
 import { Link, usePathname } from "@/i18n/routing";
 import { paths } from "@/lib/paths";
 import { cn } from "@/lib/utils";
-import { useCurrentRegion } from "@/regions/client";
 
-import { LocaleSwitch } from "../locale-switch";
 import { Logo } from "./logo";
 import { MobileSearch } from "./mobile-search";
 import { ShoppingBagIconWithCount } from "./shopping-bag-icon-with-count";
@@ -34,7 +32,6 @@ export const MobileSideMenu = ({
 
   const pathname = usePathname();
   const t = useTranslations();
-  const region = useCurrentRegion();
 
   const handleMenuItemClick = (isMenuItemClicked: boolean) => {
     setIsOpen(!isMenuItemClicked);
@@ -82,7 +79,9 @@ export const MobileSideMenu = ({
                 onMenuItemClick={handleMenuItemClick}
               />
               <div className="mt-auto flex w-full items-center justify-between bg-white">
-                <LocaleSwitch region={region} />
+                {/* Disabled for now as we have only one region available */}
+                {/* <LocaleSwitch region={region} /> */}
+                <span />
                 <Button asChild variant="ghost" className="inline-flex gap-1.5">
                   <Link
                     href={

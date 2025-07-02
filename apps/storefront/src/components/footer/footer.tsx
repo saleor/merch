@@ -48,24 +48,9 @@ export const Footer = async () => {
                   href={paths.home.asPath()}
                   title={t("common.go-to-homepage")}
                 >
-                  <BrandLogo height={36} className="fill-primary" />
+                  <BrandLogo height={20} className="fill-primary" />
                 </Link>
               </div>
-              <p className="col-span-2 flex justify-center md:col-span-1 md:justify-start">
-                {t.rich("footer.demo-version", {
-                  link: (chunks) => (
-                    <Link
-                      href="https://github.com/mirumee/nimara-ecommerce"
-                      className="hover:underline"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      prefetch={false}
-                    >
-                      {chunks}
-                    </Link>
-                  ),
-                })}
-              </p>
             </div>
 
             <div className="row-span-2 grid grid-cols-subgrid grid-rows-subgrid md:col-span-1">
@@ -112,13 +97,13 @@ export const Footer = async () => {
       <div className="container">
         <div className="border-muted-foreground/50 text-muted-foreground flex flex-wrap justify-between gap-4 border-t py-8">
           <span className="flex-grow basis-full text-center sm:basis-1 sm:text-left">
-            &#xa9; Mirumee {new Date().getFullYear()}
+            &#xa9; Saleor Commerce {new Date().getFullYear()}
           </span>
-          <span className="flex-grow basis-full text-center sm:basis-1">
+          <span className="flex-grow basis-full text-center sm:basis-1 sm:text-right">
             {t.rich("footer.made-with", {
-              link: (chunks) => (
+              saleorLink: (chunks) => (
                 <Link
-                  href="https://mirumee.com"
+                  href="https://saleor.io?utm_source=merch-store&utm_medium=footer"
                   className="hover:underline"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -127,13 +112,9 @@ export const Footer = async () => {
                   {chunks}
                 </Link>
               ),
-            })}
-          </span>
-          <span className="flex-grow basis-full text-center sm:basis-1 sm:text-right">
-            {t.rich("footer.open-source", {
-              link: (chunks) => (
+              nimaraLink: (chunks) => (
                 <Link
-                  href="https://github.com/mirumee/nimara-ecommerce"
+                  href="https://nimara.store?utm_source=merch-store&utm_medium=footer"
                   className="hover:underline"
                   target="_blank"
                   rel="noopener noreferrer"

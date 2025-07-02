@@ -407,7 +407,7 @@
     "returned": "RETURNED"
   },
   "footer": {
-    "made-with": "Made with ❤\uFE0F by <link>Mirumee</link>",
+    "made-with": "Built with <saleorLink>Saleor</saleorLink> and <nimaraLink>Nimara</nimaraLink>.",
     "open-source": "<link>An open-source storefront for everyone</link>",
     "demo-version": "<link>This is the demo version of Nimara Store.</link>",
     "our-products": "Our products",

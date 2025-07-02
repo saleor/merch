@@ -15,7 +15,7 @@ export const Logo = () => {
       title={t("go-to-homepage")}
       aria-label={t("logo")}
     >
-      <BrandLogo height={36} className="fill-primary" />
+      <BrandLogo height={20} className="fill-primary" />
     </Link>
   );
 };

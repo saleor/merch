@@ -5,7 +5,6 @@ import { Suspense } from "react";
 import { Button } from "@nimara/ui/components/button";
 
 import { getAccessToken } from "@/auth";
-import { LocaleSwitch } from "@/components/locale-switch";
 import { CACHE_TTL } from "@/config";
 import { clientEnvs } from "@/envs/client";
 import { Link } from "@/i18n/routing";
@@ -81,7 +80,7 @@ export const Header = async () => {
             />
           </div>
 
-          <div className="flex items-center justify-start">
+          <div className="flex items-center justify-center md:justify-start">
             <Logo />
           </div>
           <div className="hidden md:block">
@@ -91,9 +90,10 @@ export const Header = async () => {
           <div className="flex justify-end gap-1 align-middle">
             <MobileSearch />
 
-            <div className="hidden md:block">
+            {/* Disabled for now as we have only one region available */}
+            {/* <div className="hidden md:block">
               <LocaleSwitch region={region} />
-            </div>
+            </div> */}
 
             <Button
               asChild

@@ -91,16 +91,16 @@ export const websiteToJsonLd = (): WithContext<WebSite> => {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "Nimara Storefront",
-    url: "https://www.nimara.store.com",
+    name: "Saleor Merch Store",
+    url: "http://merch.saleor.io",
     mainEntityOfPage: {
       "@type": "WebPage",
-      url: "https://www.nimara.store.com",
+      url: "http://merch.saleor.io",
     },
     publisher: {
       "@type": "Organization",
-      name: "Nimara Storefront",
-      url: "https://www.nimara.store.com",
+      name: "Saleor Merch Store",
+      url: "https://www.saleor.io",
       image: {
         "@type": "ImageObject",
         url: "/brand-logo.svg",
