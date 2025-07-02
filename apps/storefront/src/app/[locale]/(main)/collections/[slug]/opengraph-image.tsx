@@ -56,7 +56,7 @@ export default async function Image({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={`${clientEnvs.BASE_URL}/og-hp.png`}
-            alt="Nimara's logo"
+            alt="Saleor logo"
             style={{
               maxWidth: "100%",
               maxHeight: "100%",
@@ -89,7 +89,7 @@ export default async function Image({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={`${clientEnvs.BASE_URL}/brand-logo-dark.svg`}
-            alt="Nimara's logo"
+            alt="Saleor logo"
             style={{
               maxWidth: "100%",
               maxHeight: "100%",
