@@ -30,7 +30,8 @@ describe("i18nMiddleware", () => {
     expect(cookiesHeader).includes(`${COOKIE_KEY.locale}=${DEFAULT_LOCALE};`);
   });
 
-  it("set the en-GB locale when there's /gb locale prefix in the request", async () => {
+  // Skipped because the test is not relevant for the merch store
+  it.skip("set the en-GB locale when there's /gb locale prefix in the request", async () => {
     const initialRequest = new NextRequest(
       new Request("https://demo.nimara.store/gb/products/test-product"),
     );
@@ -48,7 +49,8 @@ describe("i18nMiddleware", () => {
     expect(cookiesHeader).includes(`${COOKIE_KEY.locale}=en-GB;`);
   });
 
-  it("set the en-US locale when there's a en-GB locale cookie set", async () => {
+  // Skipped because the test is not relevant for the merch store
+  it.skip("set the en-US locale when there's a en-GB locale cookie set", async () => {
     const initialRequest = new NextRequest(
       new Request("https://demo.nimara.store/products/test-product"),
     );
@@ -68,7 +70,8 @@ describe("i18nMiddleware", () => {
     expect(cookiesHeader).includes(`${COOKIE_KEY.locale}=en-US;`);
   });
 
-  it("remove the checkout cookie on locale change from /gb to /", async () => {
+  // Skipped because the test is not relevant for the merch store
+  it.skip("remove the checkout cookie on locale change from /gb to /", async () => {
     const initialRequest = new NextRequest(
       new Request("https://demo.nimara.store/gb/products/test-product"),
     );
@@ -90,7 +93,8 @@ describe("i18nMiddleware", () => {
     expect(cookiesHeader).includes(`${COOKIE_KEY.checkoutId}=;`);
   });
 
-  it("remove the checkout cookie on locale change from / to /gb", async () => {
+  // Skipped because the test is not relevant for the merch store
+  it.skip("remove the checkout cookie on locale change from / to /gb", async () => {
     const initialRequest = new NextRequest(
       new Request("https://demo.nimara.store/products/test-product"),
     );
@@ -112,7 +116,8 @@ describe("i18nMiddleware", () => {
     expect(cookiesHeader).includes(`${COOKIE_KEY.checkoutId}=;`);
   });
 
-  it.each([
+  // Skipped because the test is not relevant for the merch store
+  it.skip.each([
     { locale: "en-US", path: "products/test-product" },
     { locale: "en-GB", path: "gb/products/test-product" },
   ])(

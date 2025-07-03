@@ -1,5 +1,6 @@
 import "@nimara/ui/styles/globals";
 
+import { GoogleTagManager } from "@next/third-parties/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -23,6 +24,8 @@ export const metadata: Metadata = {
     default: clientEnvs.NEXT_PUBLIC_DEFAULT_PAGE_TITLE,
   },
 };
+
+const GTM_ID = clientEnvs.NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID;
 
 export default async function LocaleLayout({
   children,
@@ -52,6 +55,7 @@ export default async function LocaleLayout({
           </NuqsAdapter>
         </NextIntlClientProvider>
       </body>
+      {GTM_ID && <GoogleTagManager gtmId={GTM_ID} />}
     </html>
   );
 }
