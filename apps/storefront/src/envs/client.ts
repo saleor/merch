@@ -19,6 +19,9 @@ const schema = z.object({
   NEXT_PUBLIC_BUTTER_CMS_API_KEY: z.string().optional(),
 
   CMS_SERVICE: z.enum(["saleor", "butter"]).default("saleor"),
+
+  NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID: z.string().optional(),
+
   BASE_URL: z.string().default(""),
 });
 
@@ -36,5 +39,9 @@ export const clientEnvs = schema.parse({
   NEXT_PUBLIC_BUTTER_CMS_API_KEY: process.env.NEXT_PUBLIC_BUTTER_CMS_API_KEY,
 
   CMS_SERVICE: process.env.CMS_SERVICE,
+
+  NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID:
+    process.env.NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID,
+
   BASE_URL: process.env.BASE_URL,
 });
