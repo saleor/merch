@@ -27,6 +27,12 @@ export type PaymentGatewayConfigFragment_PaymentGatewayConfig_errors_PaymentGate
 
 export type PaymentGatewayConfigFragment = { id: string, data: unknown | null, errors: Array<PaymentGatewayConfigFragment_PaymentGatewayConfig_errors_PaymentGatewayConfigError> | null };
 
+export type GiftCardFragment_GiftCard_currentBalance_Money = { currency: string, amount: number };
+
+export type GiftCardFragment_GiftCard_initialBalance_Money = { currency: string, amount: number };
+
+export type GiftCardFragment = { displayCode: string, id: string, last4CodeChars: string, currentBalance: GiftCardFragment_GiftCard_currentBalance_Money, initialBalance: GiftCardFragment_GiftCard_initialBalance_Money };
+
 export type MetadataErrorFragment = { field: string | null, code: Types.MetadataErrorCode, message: string | null };
 
 export type MetadataItemFragment = { key: string, value: string };
@@ -109,6 +115,22 @@ export const PaymentGatewayConfigFragment = new TypedDocumentString(`
   }
 }
     `, {"fragmentName":"PaymentGatewayConfigFragment"}) as unknown as TypedDocumentString<PaymentGatewayConfigFragment, unknown>;
+export const GiftCardFragment = new TypedDocumentString(`
+    fragment GiftCardFragment on GiftCard {
+  currentBalance {
+    ...MoneyFragment
+  }
+  displayCode
+  id
+  initialBalance {
+    ...MoneyFragment
+  }
+  last4CodeChars
+}
+    fragment MoneyFragment on Money {
+  currency
+  amount
+}`, {"fragmentName":"GiftCardFragment"}) as unknown as TypedDocumentString<GiftCardFragment, unknown>;
 export const MetadataErrorFragment = new TypedDocumentString(`
     fragment MetadataErrorFragment on MetadataError {
   field

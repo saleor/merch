@@ -28,6 +28,7 @@ import { useToast } from "@nimara/ui/hooks";
 import { AddressForm } from "@/components/address-form/address-form";
 import { CheckboxField } from "@/components/form/checkbox-field";
 import { PaymentMethods } from "@/components/payment-methods";
+import { clientEnvs } from "@/envs/client";
 import { usePathname, useRouter } from "@/i18n/routing";
 import { addressToSchema } from "@/lib/address";
 import { type FormattedAddress } from "@/lib/checkout";
@@ -40,7 +41,7 @@ import { cn } from "@/lib/utils";
 import { useCurrentRegion } from "@/regions/client";
 import { paymentService } from "@/services/payment";
 
-import { updateBillingAddress } from "./actions";
+import { orderCreate, updateBillingAddress } from "./actions";
 import { AddressTab } from "./address-tab";
 import {
   type BillingAddressPath,
@@ -105,6 +106,7 @@ export const Payment = ({
       : [],
   );
 
+  const redirectUrl = `${storeUrl}${paths.payment.confirmation.asPath()}`;
   const defaultBillingAddress = formattedAddresses[0]?.address;
   const formattedToSchemaDefaultBillingAddress = {
     ...addressToSchema(defaultBillingAddress),
@@ -146,6 +148,7 @@ export const Payment = ({
   const hasSelectedPaymentMethod = !!paymentMethod;
   const isAddingNewPaymentMethod = activeTab === "new";
   const isLoading = !isInitialized || isProcessing;
+  const isFullyCovered = checkout.totalPrice.gross.amount <= 0;
   const canProceed =
     !isLoading &&
     (isAddingNewPaymentMethod ? isMounted : hasSelectedPaymentMethod);
@@ -193,49 +196,67 @@ export const Payment = ({
       }
     }
 
-    let paymentSecret: Maybe<string> = undefined;
-    const redirectUrl = `${storeUrl}${paths.payment.confirmation.asPath()}`;
+    if (!clientEnvs.NEXT_PUBLIC_STRIPE_DISABLED) {
+      let paymentSecret: Maybe<string> = undefined;
 
-    /**
-     * Using existing payment method requires passing it to the stripe app to
-     * tokenize it and obtain a secret, which needs to be passed to
-     * paymentExecute.
-     */
-    if (paymentMethod) {
-      const result = await paymentService.paymentGatewayTransactionInitialize({
-        id: checkout.id,
-        amount: checkout.totalPrice.gross.amount,
-        paymentMethod,
-        customerId: paymentGatewayCustomer,
-        saveForFutureUse,
+      /**
+       * Using existing payment method requires passing it to the stripe app to
+       * tokenize it and obtain a secret, which needs to be passed to
+       * paymentExecute.
+       */
+      if (paymentMethod) {
+        const result = await paymentService.paymentGatewayTransactionInitialize(
+          {
+            id: checkout.id,
+            amount: checkout.totalPrice.gross.amount,
+            paymentMethod,
+            customerId: paymentGatewayCustomer,
+            saveForFutureUse,
+          },
+        );
+
+        if (!result.ok) {
+          setErrors(translateApiErrors({ t, errors: result.errors }));
+          setIsProcessing(false);
+
+          return;
+        }
+
+        paymentSecret = result.data.clientSecret;
+      }
+
+      const result = await paymentService.paymentExecute({
+        billingDetails: {
+          ...checkout.billingAddress,
+          country: checkout.billingAddress?.country,
+        },
+        paymentSecret,
+        redirectUrl,
       });
 
       if (!result.ok) {
         setErrors(translateApiErrors({ t, errors: result.errors }));
-        setIsProcessing(false);
-
-        return;
       }
+    } else {
+      // Create order without executing payment as we use only gift cards or vouchers
+      const resultOrderCreate = await orderCreate();
 
-      paymentSecret = result.data.clientSecret;
+      if (!resultOrderCreate.ok) {
+        setErrors(translateApiErrors({ t, errors: resultOrderCreate.errors }));
+      }
     }
 
-    const result = await paymentService.paymentExecute({
-      billingDetails: {
-        ...checkout.billingAddress,
-        country: checkout.billingAddress?.country,
-      },
-      paymentSecret,
-      redirectUrl,
-    });
-
-    if (!result.ok) {
-      setErrors(translateApiErrors({ t, errors: result.errors }));
-      setIsProcessing(false);
-    }
+    setIsProcessing(false);
   };
 
   useEffect(() => {
+    if (clientEnvs.NEXT_PUBLIC_STRIPE_DISABLED) {
+      // If Stripe is not enabled, we can omit the payment initialization.
+      setIsInitialized(true);
+
+      return;
+    }
+
     void (async () => {
       const [result] = await Promise.all([
         paymentService.paymentGatewayInitialize({
@@ -254,6 +275,13 @@ export const Payment = ({
   }, []);
 
   useEffect(() => {
+    if (clientEnvs.NEXT_PUBLIC_STRIPE_DISABLED) {
+      // If Stripe is not enabled, we can mount the payment element immediately.
+      setIsMounted(true);
+
+      return;
+    }
+
     if (!isInitialized) {
       return;
     }
@@ -351,51 +379,61 @@ export const Payment = ({
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handlePlaceOrder)} noValidate>
         <div className="mb-8 space-y-6">
-          <Tabs
-            defaultValue={activeTab}
-            onValueChange={(value) => setActiveTab(value as TabName)}
-            className="grid gap-5"
-          >
-            <TabsList
-              className={cn("grid w-full grid-cols-2", {
-                hidden: !hasSavedPaymentMethods,
-              })}
+          {!clientEnvs.NEXT_PUBLIC_STRIPE_DISABLED ? (
+            <Tabs
+              defaultValue={activeTab}
+              onValueChange={(value) => setActiveTab(value as TabName)}
+              className="grid gap-5"
             >
-              <TabsTrigger disabled={isLoading} value="saved">
-                {t("payment.saved-methods")}
-              </TabsTrigger>
-              <TabsTrigger disabled={isLoading} value="new">
-                {t("payment.new-method")}
-              </TabsTrigger>
-            </TabsList>
+              <TabsList
+                className={cn("grid w-full grid-cols-2", {
+                  hidden: !hasSavedPaymentMethods,
+                })}
+              >
+                <TabsTrigger disabled={isLoading} value="saved">
+                  {t("payment.saved-methods")}
+                </TabsTrigger>
+                <TabsTrigger disabled={isLoading} value="new">
+                  {t("payment.new-method")}
+                </TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="saved">
-              <PaymentMethods methods={paymentGatewayMethods} />
-            </TabsContent>
+              <TabsContent value="saved">
+                <PaymentMethods methods={paymentGatewayMethods} />
+              </TabsContent>
 
-            <TabsContent value="new">
-              {!isMounted && (
-                <div className={cn("flex w-full justify-center py-16")}>
-                  <Spinner />
-                </div>
-              )}
-              <div className={cn({ "pointer-events-none": !isMounted })}>
-                <div
-                  className={cn({ hidden: !isMounted })}
-                  id={PAYMENT_ELEMENT_ID}
-                />
-
-                {user && (
-                  <CheckboxField
-                    className="mt-6"
-                    name="saveForFutureUse"
-                    disabled={!isMounted || isProcessing}
-                    label={t("payment.save-method")}
-                  />
+              <TabsContent value="new">
+                {!isMounted && (
+                  <div className={cn("flex w-full justify-center py-16")}>
+                    <Spinner />
+                  </div>
                 )}
-              </div>
-            </TabsContent>
-          </Tabs>
+                <div className={cn({ "pointer-events-none": !isMounted })}>
+                  <div
+                    className={cn({ hidden: !isMounted })}
+                    id={PAYMENT_ELEMENT_ID}
+                  />
+
+                  {user && (
+                    <CheckboxField
+                      className="mt-6"
+                      name="saveForFutureUse"
+                      disabled={!isMounted || isProcessing}
+                      label={t("payment.save-method")}
+                    />
+                  )}
+                </div>
+              </TabsContent>
+            </Tabs>
+          ) : (
+            <>
+              <p className="text-muted-foreground text-sm">
+                Please use the{" "}
+                <span className="font-medium italic">Add discount code</span> to
+                apply your gift card.
+              </p>
+            </>
+          )}
 
           <div className="space-y-6">
             <h3 className="text-muted-foreground text-base font-normal leading-7">
@@ -442,7 +480,12 @@ export const Payment = ({
           <div className="flex flex-col gap-3">
             <Button
               type="submit"
-              disabled={isCountryChanging || !canProceed || isProcessing}
+              disabled={
+                isCountryChanging ||
+                !isFullyCovered ||
+                !canProceed ||
+                isProcessing
+              }
               className="!mt-8 flex w-full items-center gap-1.5"
               loading={isLoading}
             >
@@ -451,6 +494,12 @@ export const Payment = ({
                 {t("payment.placeOrder")}
               </span>
             </Button>
+
+            {clientEnvs.NEXT_PUBLIC_STRIPE_DISABLED && !isFullyCovered && (
+              <span className="text-muted-foreground text-sm">
+                {t("payment.gift-card-has-enough-funds")}
+              </span>
+            )}
 
             {errors.map((message, i) => (
               <p key={i} className="text-destructive text-sm font-medium">

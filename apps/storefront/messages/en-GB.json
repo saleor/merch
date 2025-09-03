@@ -195,6 +195,7 @@
     "saved-methods": "Saved methods",
     "new-method": "New method",
     "add-new-method": "Add new method",
+    "gift-card-has-enough-funds": "Please make sure that your gift card covers the total amount of your order.",
     "paypal-accounts": "Paypal accounts",
     "exp-date": "Exp. date",
     "title": "Payment",

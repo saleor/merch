@@ -1,7 +1,13 @@
 import type * as Types from '@nimara/codegen/schema';
 
 import type { DocumentTypeDecoration } from '@graphql-typed-document-node/core';
-export type CheckoutAddPromoCodeMutation_checkoutAddPromoCode_CheckoutAddPromoCode_checkout_Checkout = { id: string };
+export type CheckoutAddPromoCodeMutation_checkoutAddPromoCode_CheckoutAddPromoCode_checkout_Checkout_giftCards_GiftCard_currentBalance_Money = { currency: string, amount: number };
+
+export type CheckoutAddPromoCodeMutation_checkoutAddPromoCode_CheckoutAddPromoCode_checkout_Checkout_giftCards_GiftCard_initialBalance_Money = { currency: string, amount: number };
+
+export type CheckoutAddPromoCodeMutation_checkoutAddPromoCode_CheckoutAddPromoCode_checkout_Checkout_giftCards_GiftCard = { displayCode: string, id: string, last4CodeChars: string, currentBalance: CheckoutAddPromoCodeMutation_checkoutAddPromoCode_CheckoutAddPromoCode_checkout_Checkout_giftCards_GiftCard_currentBalance_Money, initialBalance: CheckoutAddPromoCodeMutation_checkoutAddPromoCode_CheckoutAddPromoCode_checkout_Checkout_giftCards_GiftCard_initialBalance_Money };
+
+export type CheckoutAddPromoCodeMutation_checkoutAddPromoCode_CheckoutAddPromoCode_checkout_Checkout = { id: string, giftCards: Array<CheckoutAddPromoCodeMutation_checkoutAddPromoCode_CheckoutAddPromoCode_checkout_Checkout_giftCards_GiftCard> };
 
 export type CheckoutAddPromoCodeMutation_checkoutAddPromoCode_CheckoutAddPromoCode_errors_CheckoutError = { addressType: Types.AddressTypeEnum | null, code: Types.CheckoutErrorCode, field: string | null, lines: Array<string> | null, message: string | null, variants: Array<string> | null };
 
@@ -97,7 +103,9 @@ export type CheckoutEmailUpdateMutationVariables = Types.Exact<{
 
 export type CheckoutEmailUpdateMutation = CheckoutEmailUpdateMutation_Mutation;
 
-export type CheckoutRemovePromoCodeMutation_checkoutRemovePromoCode_CheckoutRemovePromoCode_checkout_Checkout = { id: string };
+export type CheckoutRemovePromoCodeMutation_checkoutRemovePromoCode_CheckoutRemovePromoCode_checkout_Checkout_giftCards_GiftCard = { displayCode: string, id: string, last4CodeChars: string, currentBalance: CheckoutAddPromoCodeMutation_checkoutAddPromoCode_CheckoutAddPromoCode_checkout_Checkout_giftCards_GiftCard_currentBalance_Money, initialBalance: CheckoutAddPromoCodeMutation_checkoutAddPromoCode_CheckoutAddPromoCode_checkout_Checkout_giftCards_GiftCard_initialBalance_Money };
+
+export type CheckoutRemovePromoCodeMutation_checkoutRemovePromoCode_CheckoutRemovePromoCode_checkout_Checkout = { id: string, giftCards: Array<CheckoutRemovePromoCodeMutation_checkoutRemovePromoCode_CheckoutRemovePromoCode_checkout_Checkout_giftCards_GiftCard> };
 
 export type CheckoutRemovePromoCodeMutation_checkoutRemovePromoCode_CheckoutRemovePromoCode_errors_CheckoutError = { addressType: Types.AddressTypeEnum | null, code: Types.CheckoutErrorCode, field: string | null, lines: Array<string> | null, message: string | null, variants: Array<string> | null };
 
@@ -107,7 +115,8 @@ export type CheckoutRemovePromoCodeMutation_Mutation = { checkoutRemovePromoCode
 
 
 export type CheckoutRemovePromoCodeMutationVariables = Types.Exact<{
-  promoCode: Types.Scalars['String']['input'];
+  promoCode?: Types.InputMaybe<Types.Scalars['String']['input']>;
+  promoCodeId?: Types.InputMaybe<Types.Scalars['ID']['input']>;
   checkoutId: Types.Scalars['ID']['input'];
 }>;
 
@@ -153,13 +162,31 @@ export const CheckoutAddPromoCodeMutationDocument = new TypedDocumentString(`
   checkoutAddPromoCode(promoCode: $promoCode, id: $checkoutId) {
     checkout {
       id
+      giftCards {
+        ...GiftCardFragment
+      }
     }
     errors {
       ...CheckoutErrorFragment
     }
   }
 }
-    fragment CheckoutErrorFragment on CheckoutError {
+    fragment GiftCardFragment on GiftCard {
+  currentBalance {
+    ...MoneyFragment
+  }
+  displayCode
+  id
+  initialBalance {
+    ...MoneyFragment
+  }
+  last4CodeChars
+}
+fragment MoneyFragment on Money {
+  currency
+  amount
+}
+fragment CheckoutErrorFragment on CheckoutError {
   addressType
   code
   field
@@ -249,17 +276,39 @@ export const CheckoutEmailUpdateMutationDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<CheckoutEmailUpdateMutation, CheckoutEmailUpdateMutationVariables>;
 export const CheckoutRemovePromoCodeMutationDocument = new TypedDocumentString(`
-    mutation CheckoutRemovePromoCodeMutation($promoCode: String!, $checkoutId: ID!) {
-  checkoutRemovePromoCode(promoCode: $promoCode, id: $checkoutId) {
+    mutation CheckoutRemovePromoCodeMutation($promoCode: String, $promoCodeId: ID, $checkoutId: ID!) {
+  checkoutRemovePromoCode(
+    id: $checkoutId
+    promoCode: $promoCode
+    promoCodeId: $promoCodeId
+  ) {
     checkout {
       id
+      giftCards {
+        ...GiftCardFragment
+      }
     }
     errors {
       ...CheckoutErrorFragment
     }
   }
 }
-    fragment CheckoutErrorFragment on CheckoutError {
+    fragment GiftCardFragment on GiftCard {
+  currentBalance {
+    ...MoneyFragment
+  }
+  displayCode
+  id
+  initialBalance {
+    ...MoneyFragment
+  }
+  last4CodeChars
+}
+fragment MoneyFragment on Money {
+  currency
+  amount
+}
+fragment CheckoutErrorFragment on CheckoutError {
   addressType
   code
   field

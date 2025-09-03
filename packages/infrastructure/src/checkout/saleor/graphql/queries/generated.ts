@@ -3,6 +3,12 @@ import type * as Types from '@nimara/codegen/schema';
 import type { DocumentTypeDecoration } from '@graphql-typed-document-node/core';
 export type CheckoutFindQuery_checkout_Checkout_discount_Money = { amount: number, currency: string };
 
+export type CheckoutFindQuery_checkout_Checkout_giftCards_GiftCard_currentBalance_Money = { currency: string, amount: number };
+
+export type CheckoutFindQuery_checkout_Checkout_giftCards_GiftCard_initialBalance_Money = { currency: string, amount: number };
+
+export type CheckoutFindQuery_checkout_Checkout_giftCards_GiftCard = { displayCode: string, id: string, last4CodeChars: string, currentBalance: CheckoutFindQuery_checkout_Checkout_giftCards_GiftCard_currentBalance_Money, initialBalance: CheckoutFindQuery_checkout_Checkout_giftCards_GiftCard_initialBalance_Money };
+
 export type CheckoutFindQuery_checkout_Checkout_shippingMethods_ShippingMethod_price_Money = { amount: number, currency: string };
 
 export type CheckoutFindQuery_checkout_Checkout_shippingMethods_ShippingMethod = { id: string, name: string, price: CheckoutFindQuery_checkout_Checkout_shippingMethods_ShippingMethod_price_Money };
@@ -72,7 +78,7 @@ export type CheckoutFindQuery_checkout_Checkout_problems_CheckoutLineProblemVari
 
 export type CheckoutFindQuery_checkout_Checkout_problems = CheckoutFindQuery_checkout_Checkout_problems_CheckoutLineProblemInsufficientStock | CheckoutFindQuery_checkout_Checkout_problems_CheckoutLineProblemVariantNotAvailable;
 
-export type CheckoutFindQuery_checkout_Checkout = { id: string, email: string | null, displayGrossPrices: boolean, voucherCode: string | null, authorizeStatus: Types.CheckoutAuthorizeStatusEnum, chargeStatus: Types.CheckoutChargeStatusEnum, discount: CheckoutFindQuery_checkout_Checkout_discount_Money | null, shippingMethods: Array<CheckoutFindQuery_checkout_Checkout_shippingMethods_ShippingMethod>, shippingAddress: CheckoutFindQuery_checkout_Checkout_shippingAddress_Address | null, billingAddress: CheckoutFindQuery_checkout_Checkout_billingAddress_Address | null, deliveryMethod: CheckoutFindQuery_checkout_Checkout_deliveryMethod_ShippingMethod_Warehouse | null, availablePaymentGateways: Array<CheckoutFindQuery_checkout_Checkout_availablePaymentGateways_PaymentGateway>, lines: Array<CheckoutFindQuery_checkout_Checkout_lines_CheckoutLine>, totalPrice: CheckoutFindQuery_checkout_Checkout_totalPrice_TaxedMoney, subtotalPrice: CheckoutFindQuery_checkout_Checkout_subtotalPrice_TaxedMoney, shippingPrice: CheckoutFindQuery_checkout_Checkout_shippingPrice_TaxedMoney, problems: Array<CheckoutFindQuery_checkout_Checkout_problems> | null };
+export type CheckoutFindQuery_checkout_Checkout = { id: string, email: string | null, displayGrossPrices: boolean, voucherCode: string | null, authorizeStatus: Types.CheckoutAuthorizeStatusEnum, chargeStatus: Types.CheckoutChargeStatusEnum, discount: CheckoutFindQuery_checkout_Checkout_discount_Money | null, giftCards: Array<CheckoutFindQuery_checkout_Checkout_giftCards_GiftCard>, shippingMethods: Array<CheckoutFindQuery_checkout_Checkout_shippingMethods_ShippingMethod>, shippingAddress: CheckoutFindQuery_checkout_Checkout_shippingAddress_Address | null, billingAddress: CheckoutFindQuery_checkout_Checkout_billingAddress_Address | null, deliveryMethod: CheckoutFindQuery_checkout_Checkout_deliveryMethod_ShippingMethod_Warehouse | null, availablePaymentGateways: Array<CheckoutFindQuery_checkout_Checkout_availablePaymentGateways_PaymentGateway>, lines: Array<CheckoutFindQuery_checkout_Checkout_lines_CheckoutLine>, totalPrice: CheckoutFindQuery_checkout_Checkout_totalPrice_TaxedMoney, subtotalPrice: CheckoutFindQuery_checkout_Checkout_subtotalPrice_TaxedMoney, shippingPrice: CheckoutFindQuery_checkout_Checkout_shippingPrice_TaxedMoney, problems: Array<CheckoutFindQuery_checkout_Checkout_problems> | null };
 
 export type CheckoutFindQuery_Query = { checkout: CheckoutFindQuery_checkout_Checkout | null };
 
@@ -122,6 +128,9 @@ export const CheckoutFindQueryDocument = new TypedDocumentString(`
     currency
   }
   voucherCode
+  giftCards {
+    ...GiftCardFragment
+  }
   shippingMethods {
     id
     name
@@ -172,6 +181,21 @@ export const CheckoutFindQueryDocument = new TypedDocumentString(`
   problems {
     ...CheckoutProblemsFragment
   }
+}
+fragment GiftCardFragment on GiftCard {
+  currentBalance {
+    ...MoneyFragment
+  }
+  displayCode
+  id
+  initialBalance {
+    ...MoneyFragment
+  }
+  last4CodeChars
+}
+fragment MoneyFragment on Money {
+  currency
+  amount
 }
 fragment AddressFragment on Address {
   id
@@ -233,10 +257,6 @@ fragment CartLineFragment on CheckoutLine {
       }
     }
   }
-}
-fragment MoneyFragment on Money {
-  currency
-  amount
 }
 fragment TaxedMoneyFragment on TaxedMoney {
   net {

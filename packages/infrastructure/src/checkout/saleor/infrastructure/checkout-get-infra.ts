@@ -62,6 +62,11 @@ const serializeCheckout = (checkout: CheckoutFragment): Checkout => {
       ...method,
       price: serializeMoney(method.price),
     })),
+    usedGiftCards: checkout.giftCards?.map((giftCard) => ({
+      ...giftCard,
+      initialBalance: serializeMoney(giftCard.initialBalance),
+      currentBalance: serializeMoney(giftCard.currentBalance),
+    })),
     totalPrice: serializeTaxedMoney(checkout.totalPrice),
     problems: serializeCheckoutProblems(checkout.problems, priceType),
     subtotalPrice: calculateSubtotalPrice(checkout),

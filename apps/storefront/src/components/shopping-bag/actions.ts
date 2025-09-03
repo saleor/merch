@@ -25,13 +25,16 @@ export async function addPromoCode({
 export async function removePromoCode({
   checkoutId,
   promoCode,
+  promoCodeId,
 }: {
   checkoutId: string;
-  promoCode: string;
+  promoCode?: string;
+  promoCodeId?: string;
 }) {
   const result = await checkoutService.checkoutRemovePromoCode({
     checkoutId,
     promoCode,
+    promoCodeId,
   });
 
   revalidatePath(paths.checkout.asPath());

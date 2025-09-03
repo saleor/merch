@@ -1,7 +1,5 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-
 import { type Price } from "@nimara/domain/objects/common";
 import { cn } from "@nimara/ui/lib/utils";
 
@@ -22,7 +20,6 @@ export const ShoppingBagPrice = ({
   heading,
   dataTestId,
 }: ShoppingBagPriceProps) => {
-  const t = useTranslations("common");
   const formatter = useLocalizedFormatter();
 
   const isPrimary = variant === "primary";
@@ -41,13 +38,7 @@ export const ShoppingBagPrice = ({
         data-testid={`shopping-bag-price-${dataTestId}`}
       >
         <p>{heading}</p>
-        {price?.amount && (
-          <p>
-            {price.amount === 0
-              ? t("free")
-              : formatter.price({ amount: price.amount })}
-          </p>
-        )}
+        {price && <p>{formatter.price({ amount: price.amount })}</p>}
         {discount?.amount && (
           <p>-{formatter.price({ amount: discount.amount })}</p>
         )}

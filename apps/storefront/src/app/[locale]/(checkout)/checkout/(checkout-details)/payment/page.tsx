@@ -2,6 +2,7 @@ import { type AllCountryCode } from "@nimara/domain/consts";
 import { type AppErrorCode } from "@nimara/domain/objects/Error";
 import { type PaymentMethod } from "@nimara/domain/objects/Payment";
 
+import { Payment } from "@/app/[locale]/(checkout)/checkout/(checkout-details)/payment/payment";
 import { getAccessToken } from "@/auth";
 import { clientEnvs } from "@/envs/client";
 import { serverEnvs } from "@/envs/server";
@@ -18,7 +19,6 @@ import { EmailSection } from "../../_sections/email-section";
 import { PaymentSection } from "../../_sections/payment-section";
 import { ShippingAddressSection } from "../../_sections/shipping-address-section";
 import { validateCheckoutStepAction } from "../../actions";
-import { Payment } from "./payment";
 
 type PageProps = {
   params: Promise<{ locale: SupportedLocale }>;

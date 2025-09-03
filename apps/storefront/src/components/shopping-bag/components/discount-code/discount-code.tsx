@@ -3,45 +3,67 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 
 import type { Checkout } from "@nimara/domain/objects/Checkout";
 import { Button } from "@nimara/ui/components/button";
 import { Form } from "@nimara/ui/components/form";
+import { Spinner } from "@nimara/ui/components/spinner";
 import { useToast } from "@nimara/ui/hooks";
 
 import { TextFormField } from "@/components/form/text-form-field";
 
 import { addPromoCode, removePromoCode } from "../../actions";
-import { type FormSchema, formSchema } from "./schema";
+import { type PromoCodeFormSchema, promoCodeValidationSchema } from "./schema";
+
+type AppliedCode = {
+  displayCode: string;
+  id?: string;
+};
 
 export const DiscountCode = ({ checkout }: { checkout: Checkout }) => {
   const t = useTranslations();
   const { toast } = useToast();
   const [isTransitioning, startTransition] = useTransition();
-
   const [isOpen, setIsOpen] = useState(false);
   const [shouldClearInput, setShouldClearInput] = useState(false);
 
-  const form = useForm<FormSchema>({
-    resolver: zodResolver(formSchema({ t })),
+  const appliedCodes: AppliedCode[] = useMemo(() => {
+    const codes: AppliedCode[] = [];
+
+    if (checkout?.voucherCode) {
+      codes.push({ displayCode: checkout.voucherCode });
+    }
+
+    if (checkout?.usedGiftCards?.length) {
+      codes.push(
+        ...checkout.usedGiftCards.map((card) => ({
+          id: card.id,
+          displayCode: card.displayCode ?? card.last4CodeChars ?? "",
+        })),
+      );
+    }
+
+    return codes.filter((c) => !!c.displayCode);
+  }, [checkout]);
+
+  const form = useForm<PromoCodeFormSchema>({
+    resolver: zodResolver(promoCodeValidationSchema({ t })),
     defaultValues: {
+      promoCodes: appliedCodes,
       code: "",
     },
   });
 
-  const toggleOpen = () => {
-    setIsOpen(!isOpen);
-  };
+  const toggleOpen = () => setIsOpen((v) => !v);
 
-  const promoCode = checkout?.voucherCode;
   const isCodeApplied =
-    !!checkout?.discount?.amount &&
+    appliedCodes.length > 0 &&
     !form.formState.isSubmitting &&
     !form.formState.isLoading;
 
-  const handleSubmit = async (values: FormSchema) => {
+  const handleSubmit = async (values: PromoCodeFormSchema) => {
     startTransition(
       () =>
         void (async () => {
@@ -51,6 +73,7 @@ export const DiscountCode = ({ checkout }: { checkout: Checkout }) => {
           });
 
           if (result.ok) {
+            form.reset({ code: "" });
             setIsOpen(false);
 
             return;
@@ -58,10 +81,6 @@ export const DiscountCode = ({ checkout }: { checkout: Checkout }) => {
 
           const isPromoCodeInvalid = result.errors.find(
             (error) => error.code === "INVALID_VALUE_ERROR",
-          );
-
-          const notApplicableError = result.errors.find(
-            (error) => error.code === "VOUCHER_NOT_APPLICABLE_ERROR",
           );
 
           if (isPromoCodeInvalid) {
@@ -74,6 +93,27 @@ export const DiscountCode = ({ checkout }: { checkout: Checkout }) => {
 
             return;
           }
+
+          // handle "DISCOUNT_CODE_ADD_ERROR"
+          const addError = result.errors.find(
+            (error) => error.code === "DISCOUNT_CODE_ADD_ERROR",
+          );
+
+          if (addError) {
+            form.setError("code", {
+              message: t("errors.DISCOUNT_CODE_ADD_ERROR", {
+                code: `(${values.code})`,
+              }),
+            });
+            setShouldClearInput(true);
+
+            return;
+          }
+
+          const notApplicableError = result.errors.find(
+            (error) => error.code === "VOUCHER_NOT_APPLICABLE_ERROR",
+          );
+
           if (notApplicableError) {
             form.setError("code", {
               message: t("errors.VOUCHER_NOT_APPLICABLE_ERROR", {
@@ -83,48 +123,46 @@ export const DiscountCode = ({ checkout }: { checkout: Checkout }) => {
             setShouldClearInput(true);
 
             return;
-          } else {
-            toast({
-              description: t("errors.UNKNOWN_ERROR"),
-              variant: "destructive",
-              position: "center",
-            });
           }
+
+          toast({
+            description: t("errors.UNKNOWN_ERROR"),
+            variant: "destructive",
+            position: "center",
+          });
         })(),
     );
   };
 
-  const handleRemoveCode = async (
-    _event: React.MouseEvent<HTMLButtonElement>,
-  ) => {
+  const handleRemoveCode = async (codeToRemove: AppliedCode) => {
     startTransition(
       () =>
         void (async () => {
-          if (promoCode) {
-            const result = await removePromoCode({
-              checkoutId: checkout.id,
-              promoCode,
-            });
-
-            if (result.ok) {
-              toast({
-                description: t("cart.discount-removed"),
-                position: "center",
-              });
-
-              form.reset({ code: "" });
-
-              return;
-            }
-
-            toast({
-              description: t("errors.DISCOUNT_CODE_REMOVE_ERROR"),
-              variant: "destructive",
-              position: "center",
-            });
+          if (!codeToRemove) {
+            return;
           }
 
-          return;
+          const result = await removePromoCode({
+            checkoutId: checkout.id,
+            promoCode: codeToRemove.id ? undefined : codeToRemove.displayCode,
+            promoCodeId: codeToRemove.id,
+          });
+
+          if (result.ok) {
+            toast({
+              description: t("cart.discount-removed"),
+              position: "center",
+            });
+            form.reset({ code: "" });
+
+            return;
+          }
+
+          toast({
+            description: t("errors.DISCOUNT_CODE_REMOVE_ERROR"),
+            variant: "destructive",
+            position: "center",
+          });
         })(),
     );
   };
@@ -147,10 +185,16 @@ export const DiscountCode = ({ checkout }: { checkout: Checkout }) => {
         <div className="flex items-center justify-between text-sm text-stone-700">
           <span>
             {t("cart.discount-code", {
-              code: isCodeApplied && !isTransitioning ? `(${promoCode})` : null,
+              code:
+                isCodeApplied && !isTransitioning
+                  ? `(${appliedCodes.length})`
+                  : null,
             })}
           </span>
-          {isTransitioning ? null : !isCodeApplied && !isOpen ? (
+
+          {isTransitioning ? (
+            <Spinner className="h-4 w-4 animate-spin" />
+          ) : !isOpen ? (
             <span
               className="cursor-pointer text-stone-700 hover:underline"
               onClick={toggleOpen}
@@ -158,21 +202,20 @@ export const DiscountCode = ({ checkout }: { checkout: Checkout }) => {
               {t("cart.add-discount")}
             </span>
           ) : (
-            <Button
-              variant="ghost"
-              className="px-3 py-4"
-              onClick={isCodeApplied ? handleRemoveCode : toggleOpen}
+            <span
+              className="cursor-pointer text-stone-700 hover:underline"
+              onClick={toggleOpen}
             >
-              <X height={16} width={16} />
-            </Button>
+              {t("common.close")}
+            </span>
           )}
         </div>
 
-        {!isCodeApplied && isOpen && (
+        {isOpen && (
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleSubmit)}
-              className="mt-1 flex space-x-2"
+              className="flex gap-2"
               id="promo-code-form"
             >
               <div className="flex-grow">
@@ -183,15 +226,37 @@ export const DiscountCode = ({ checkout }: { checkout: Checkout }) => {
                 />
               </div>
               <Button
-                className="mt-2 rounded-sm text-stone-900"
+                className="mt-2"
                 variant="outline"
                 type="submit"
-                disabled={form.formState.isSubmitting}
+                disabled={form.formState.isSubmitting || isTransitioning}
               >
                 {t("cart.redeem")}
               </Button>
             </form>
           </Form>
+        )}
+
+        {isCodeApplied && (
+          <div className="grid">
+            {appliedCodes.map((c) => (
+              <span
+                key={c.displayCode}
+                className="flex items-center justify-between gap-2 text-xs"
+              >
+                <span>{c.displayCode}</span>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => handleRemoveCode(c)}
+                  aria-label={t("cart.remove-button")}
+                  disabled={isTransitioning}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </span>
+            ))}
+          </div>
         )}
       </div>
       <hr className="border-stone-200" />

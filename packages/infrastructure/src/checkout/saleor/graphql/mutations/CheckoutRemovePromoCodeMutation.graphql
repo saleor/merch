@@ -1,10 +1,18 @@
 mutation CheckoutRemovePromoCodeMutation(
-  $promoCode: String!
+  $promoCode: String
+  $promoCodeId: ID
   $checkoutId: ID!
 ) {
-  checkoutRemovePromoCode(promoCode: $promoCode, id: $checkoutId) {
+  checkoutRemovePromoCode(
+    id: $checkoutId
+    promoCode: $promoCode
+    promoCodeId: $promoCodeId
+  ) {
     checkout {
       id
+      giftCards {
+        ...GiftCardFragment
+      }
     }
     errors {
       ...CheckoutErrorFragment

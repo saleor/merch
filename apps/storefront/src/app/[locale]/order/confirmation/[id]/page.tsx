@@ -21,8 +21,10 @@ export async function generateMetadata() {
   };
 }
 
-export default async function Page({ params, searchParams }: PageProps) {
+export default async function Page(props: PageProps) {
   const t = await getTranslations();
+  const searchParams = await props.searchParams;
+  const params = await props.params;
 
   return (
     <div className="grid gap-8 font-normal">

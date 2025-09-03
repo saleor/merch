@@ -5,6 +5,12 @@ export type CheckoutErrorFragment = { addressType: Types.AddressTypeEnum | null,
 
 export type CheckoutFragment_Checkout_discount_Money = { amount: number, currency: string };
 
+export type CheckoutFragment_Checkout_giftCards_GiftCard_currentBalance_Money = { currency: string, amount: number };
+
+export type CheckoutFragment_Checkout_giftCards_GiftCard_initialBalance_Money = { currency: string, amount: number };
+
+export type CheckoutFragment_Checkout_giftCards_GiftCard = { displayCode: string, id: string, last4CodeChars: string, currentBalance: CheckoutFragment_Checkout_giftCards_GiftCard_currentBalance_Money, initialBalance: CheckoutFragment_Checkout_giftCards_GiftCard_initialBalance_Money };
+
 export type CheckoutFragment_Checkout_shippingMethods_ShippingMethod_price_Money = { amount: number, currency: string };
 
 export type CheckoutFragment_Checkout_shippingMethods_ShippingMethod = { id: string, name: string, price: CheckoutFragment_Checkout_shippingMethods_ShippingMethod_price_Money };
@@ -74,7 +80,7 @@ export type CheckoutFragment_Checkout_problems_CheckoutLineProblemVariantNotAvai
 
 export type CheckoutFragment_Checkout_problems = CheckoutFragment_Checkout_problems_CheckoutLineProblemInsufficientStock | CheckoutFragment_Checkout_problems_CheckoutLineProblemVariantNotAvailable;
 
-export type CheckoutFragment = { id: string, email: string | null, displayGrossPrices: boolean, voucherCode: string | null, authorizeStatus: Types.CheckoutAuthorizeStatusEnum, chargeStatus: Types.CheckoutChargeStatusEnum, discount: CheckoutFragment_Checkout_discount_Money | null, shippingMethods: Array<CheckoutFragment_Checkout_shippingMethods_ShippingMethod>, shippingAddress: CheckoutFragment_Checkout_shippingAddress_Address | null, billingAddress: CheckoutFragment_Checkout_billingAddress_Address | null, deliveryMethod: CheckoutFragment_Checkout_deliveryMethod_ShippingMethod_Warehouse | null, availablePaymentGateways: Array<CheckoutFragment_Checkout_availablePaymentGateways_PaymentGateway>, lines: Array<CheckoutFragment_Checkout_lines_CheckoutLine>, totalPrice: CheckoutFragment_Checkout_totalPrice_TaxedMoney, subtotalPrice: CheckoutFragment_Checkout_subtotalPrice_TaxedMoney, shippingPrice: CheckoutFragment_Checkout_shippingPrice_TaxedMoney, problems: Array<CheckoutFragment_Checkout_problems> | null };
+export type CheckoutFragment = { id: string, email: string | null, displayGrossPrices: boolean, voucherCode: string | null, authorizeStatus: Types.CheckoutAuthorizeStatusEnum, chargeStatus: Types.CheckoutChargeStatusEnum, discount: CheckoutFragment_Checkout_discount_Money | null, giftCards: Array<CheckoutFragment_Checkout_giftCards_GiftCard>, shippingMethods: Array<CheckoutFragment_Checkout_shippingMethods_ShippingMethod>, shippingAddress: CheckoutFragment_Checkout_shippingAddress_Address | null, billingAddress: CheckoutFragment_Checkout_billingAddress_Address | null, deliveryMethod: CheckoutFragment_Checkout_deliveryMethod_ShippingMethod_Warehouse | null, availablePaymentGateways: Array<CheckoutFragment_Checkout_availablePaymentGateways_PaymentGateway>, lines: Array<CheckoutFragment_Checkout_lines_CheckoutLine>, totalPrice: CheckoutFragment_Checkout_totalPrice_TaxedMoney, subtotalPrice: CheckoutFragment_Checkout_subtotalPrice_TaxedMoney, shippingPrice: CheckoutFragment_Checkout_shippingPrice_TaxedMoney, problems: Array<CheckoutFragment_Checkout_problems> | null };
 
 export type CheckoutProblemsFragment_CheckoutLineProblemInsufficientStock = (
   { availableQuantity: number | null, line: CheckoutFragment_Checkout_problems_CheckoutLineProblemInsufficientStock_line_CheckoutLine }
@@ -126,6 +132,9 @@ export const CheckoutFragment = new TypedDocumentString(`
     currency
   }
   voucherCode
+  giftCards {
+    ...GiftCardFragment
+  }
   shippingMethods {
     id
     name
@@ -192,6 +201,21 @@ export const CheckoutFragment = new TypedDocumentString(`
     }
   }
 }
+fragment GiftCardFragment on GiftCard {
+  currentBalance {
+    ...MoneyFragment
+  }
+  displayCode
+  id
+  initialBalance {
+    ...MoneyFragment
+  }
+  last4CodeChars
+}
+fragment MoneyFragment on Money {
+  currency
+  amount
+}
 fragment AddressFragment on Address {
   id
   city
@@ -252,10 +276,6 @@ fragment CartLineFragment on CheckoutLine {
       }
     }
   }
-}
-fragment MoneyFragment on Money {
-  currency
-  amount
 }
 fragment TaxedMoneyFragment on TaxedMoney {
   net {

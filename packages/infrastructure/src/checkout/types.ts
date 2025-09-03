@@ -1,5 +1,5 @@
 import type { Address } from "@nimara/domain/objects/Address";
-import type { Checkout } from "@nimara/domain/objects/Checkout";
+import type { Checkout, GiftCard } from "@nimara/domain/objects/Checkout";
 import { type AsyncResult } from "@nimara/domain/objects/Result";
 
 import type { FetchOptions } from "#root/graphql/client";
@@ -30,20 +30,26 @@ export type CheckoutDeliveryMethodUpdateInfra = (
 export type CheckoutDeliveryMethodUpdateUseCase =
   CheckoutDeliveryMethodUpdateInfra;
 
-export type CheckoutPromoCodeOptions = {
+export type CheckoutPromoCodeAddOptions = {
   checkoutId: string;
   promoCode: string;
 } & WithFetchOptions;
 
 export type CheckoutAddPromoCodeInfra = (
-  opts: CheckoutPromoCodeOptions,
-) => AsyncResult<{ success: true }>;
+  opts: CheckoutPromoCodeAddOptions,
+) => AsyncResult<{ success: true; usedGiftCards: GiftCard[] }>;
 
 export type CheckoutAddPromoCodeUseCase = CheckoutAddPromoCodeInfra;
 
+export type CheckoutPromoCodeRemoveOptions = {
+  checkoutId: string;
+  promoCode?: string;
+  promoCodeId?: string;
+} & WithFetchOptions;
+
 export type CheckoutRemovePromoCodeInfra = (
-  opts: CheckoutPromoCodeOptions,
-) => AsyncResult<{ success: true }>;
+  opts: CheckoutPromoCodeRemoveOptions,
+) => AsyncResult<{ success: true; usedGiftCards: GiftCard[] }>;
 
 export type CheckoutRemovePromoCodeUseCase = CheckoutRemovePromoCodeInfra;
 

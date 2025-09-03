@@ -11,15 +11,15 @@ export const CheckoutRemover = ({
   params,
   searchParams,
 }: {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ [QUERY_PARAMS.orderPlaced]: string }>;
+  params: { id: string };
+  searchParams: { [QUERY_PARAMS.orderPlaced]: string };
 }) => {
   const router = useRouter();
 
   useEffect(() => {
     void (async () => {
-      if (QUERY_PARAMS.orderPlaced in (await searchParams)) {
-        const { id } = await params;
+      if (QUERY_PARAMS.orderPlaced in searchParams) {
+        const { id } = params;
 
         await clearCheckoutCookieAction();
 
