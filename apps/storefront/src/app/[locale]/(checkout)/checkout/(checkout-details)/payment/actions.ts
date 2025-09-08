@@ -13,6 +13,7 @@ import { updateCheckoutAddressAction } from "@/lib/actions/update-checkout-addre
 import { schemaToAddress } from "@/lib/address";
 import { paths, QUERY_PARAMS } from "@/lib/paths";
 import { checkoutService } from "@/services/checkout";
+import { storefrontLogger } from "@/services/logging";
 import { userService } from "@/services/user";
 
 import { type Schema } from "./schema";
@@ -51,10 +52,17 @@ export async function updateBillingAddress({
   return result;
 }
 
+/**
+ * Server action that creates an order from the current checkout and redirects to the order confirmation page.
+ */
 export const orderCreate = async () => {
   const checkoutId = await getCheckoutId();
 
   if (!checkoutId) {
+    storefrontLogger.error("Checkout not found while creating an order", {
+      checkoutId,
+    });
+
     return err([
       {
         code: "CHECKOUT_NOT_FOUND_ERROR",
@@ -62,10 +70,10 @@ export const orderCreate = async () => {
     ]);
   }
 
-  const locale = await getLocale();
-  const resultOrderCreate = await checkoutService.orderCreate({
-    id: checkoutId,
-  });
+  const [locale, resultOrderCreate] = await Promise.all([
+    getLocale(),
+    checkoutService.orderCreate({ id: checkoutId }),
+  ]);
 
   if (resultOrderCreate.ok) {
     redirect({
@@ -76,6 +84,11 @@ export const orderCreate = async () => {
       locale,
     });
   }
+
+  storefrontLogger.error("Order creation from checkout failed", {
+    checkoutId,
+    message: resultOrderCreate.errors.map((e) => e.message).join(", "),
+  });
 
   return err([
     {

@@ -51,6 +51,11 @@ export const serializeCheckoutProblems = (
   );
 };
 
+/**
+ * Serializes a GraphQL GiftCardFragment from the Saleor API into a GiftCard object.
+ * @param data - GiftCardFragment
+ * @returns GiftCard
+ */
 export const serializeGiftCard = (data: GiftCardFragment): GiftCard => ({
   currentBalance: serializeMoney(data.currentBalance),
   displayCode: data.displayCode,

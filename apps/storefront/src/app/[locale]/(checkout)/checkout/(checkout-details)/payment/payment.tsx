@@ -106,6 +106,7 @@ export const Payment = ({
       : [],
   );
 
+  const isPaymentAppEnabled = clientEnvs.NEXT_PUBLIC_PAYMENT_APP_ENABLED;
   const redirectUrl = `${storeUrl}${paths.payment.confirmation.asPath()}`;
   const defaultBillingAddress = formattedAddresses[0]?.address;
   const formattedToSchemaDefaultBillingAddress = {
@@ -196,7 +197,7 @@ export const Payment = ({
       }
     }
 
-    if (!clientEnvs.NEXT_PUBLIC_STRIPE_DISABLED) {
+    if (isPaymentAppEnabled) {
       let paymentSecret: Maybe<string> = undefined;
 
       /**
@@ -250,7 +251,7 @@ export const Payment = ({
   };
 
   useEffect(() => {
-    if (clientEnvs.NEXT_PUBLIC_STRIPE_DISABLED) {
+    if (!isPaymentAppEnabled) {
       // If Stripe is not enabled, we can omit the payment initialization.
       setIsInitialized(true);
 
@@ -275,7 +276,7 @@ export const Payment = ({
   }, []);
 
   useEffect(() => {
-    if (clientEnvs.NEXT_PUBLIC_STRIPE_DISABLED) {
+    if (!isPaymentAppEnabled) {
       // If Stripe is not enabled, we can mount the payment element immediately.
       setIsMounted(true);
 
@@ -379,7 +380,7 @@ export const Payment = ({
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handlePlaceOrder)} noValidate>
         <div className="mb-8 space-y-6">
-          {!clientEnvs.NEXT_PUBLIC_STRIPE_DISABLED ? (
+          {isPaymentAppEnabled ? (
             <Tabs
               defaultValue={activeTab}
               onValueChange={(value) => setActiveTab(value as TabName)}
@@ -495,7 +496,7 @@ export const Payment = ({
               </span>
             </Button>
 
-            {clientEnvs.NEXT_PUBLIC_STRIPE_DISABLED && !isFullyCovered && (
+            {!isPaymentAppEnabled && !isFullyCovered && (
               <span className="text-muted-foreground text-sm">
                 {t("payment.gift-card-has-enough-funds")}
               </span>
