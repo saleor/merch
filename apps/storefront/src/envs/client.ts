@@ -14,7 +14,8 @@ const schema = z.object({
     .enum(["TEST", "LOCAL", "DEVELOPMENT", "PRODUCTION", "STAGING"])
     .default("LOCAL"),
 
-  PAYMENT_APP_ID: z.string().default("DEVELOPMENT.stripe"),
+  PAYMENT_APP_ID: z.string().default(""),
+  NEXT_PUBLIC_PAYMENT_APP_ENABLED: z.boolean(),
 
   NEXT_PUBLIC_BUTTER_CMS_API_KEY: z.string().optional(),
 
@@ -35,6 +36,7 @@ export const clientEnvs = schema.parse({
   ENVIRONMENT: process.env.NEXT_PUBLIC_ENVIRONMENT,
 
   PAYMENT_APP_ID: process.env.NEXT_PUBLIC_PAYMENT_APP_ID,
+  NEXT_PUBLIC_PAYMENT_APP_ENABLED: !!process.env.NEXT_PUBLIC_PAYMENT_APP_ID,
 
   NEXT_PUBLIC_BUTTER_CMS_API_KEY: process.env.NEXT_PUBLIC_BUTTER_CMS_API_KEY,
 

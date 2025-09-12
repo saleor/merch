@@ -2,6 +2,9 @@ mutation CheckoutAddPromoCodeMutation($promoCode: String!, $checkoutId: ID!) {
   checkoutAddPromoCode(promoCode: $promoCode, id: $checkoutId) {
     checkout {
       id
+      giftCards {
+        ...GiftCardFragment
+      }
     }
     errors {
       ...CheckoutErrorFragment

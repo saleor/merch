@@ -7,6 +7,9 @@ fragment CheckoutFragment on Checkout {
     currency
   }
   voucherCode
+  giftCards {
+    ...GiftCardFragment
+  }
   shippingMethods {
     id
     name

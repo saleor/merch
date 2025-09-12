@@ -18,7 +18,16 @@ export type Checkout = {
   shippingPrice: TaxedMoney;
   subtotalPrice: TaxedMoney;
   totalPrice: TaxedMoney;
+  usedGiftCards: GiftCard[];
   voucherCode: string | null;
+};
+
+export type GiftCard = {
+  currentBalance: Price;
+  displayCode: string;
+  id: string;
+  initialBalance: Price;
+  last4CodeChars: string;
 };
 
 type PaymentGateway = {

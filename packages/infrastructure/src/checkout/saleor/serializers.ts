@@ -1,6 +1,11 @@
-import { type CheckoutProblems } from "@nimara/domain/objects/Checkout";
+import {
+  type CheckoutProblems,
+  type GiftCard,
+} from "@nimara/domain/objects/Checkout";
 import { type PriceType } from "@nimara/domain/objects/common";
 
+import { type GiftCardFragment } from "#root/graphql/fragments/generated";
+import { serializeMoney } from "#root/store/saleor/serializers";
 import { serializeLine } from "#root/utils";
 
 import { type CheckoutProblemsFragment } from "./graphql/fragments/generated";
@@ -45,3 +50,16 @@ export const serializeCheckoutProblems = (
     },
   );
 };
+
+/**
+ * Serializes a GraphQL GiftCardFragment from the Saleor API into a GiftCard object.
+ * @param data - GiftCardFragment
+ * @returns GiftCard
+ */
+export const serializeGiftCard = (data: GiftCardFragment): GiftCard => ({
+  currentBalance: serializeMoney(data.currentBalance),
+  displayCode: data.displayCode,
+  id: data.id,
+  initialBalance: serializeMoney(data.initialBalance),
+  last4CodeChars: data.last4CodeChars,
+});
