@@ -328,14 +328,14 @@
     "back-to-cart": "Back to cart"
   },
   "auth": {
-    "first-time-on-nimara-store": "First time on Nimara Store?",
+    "first-time-on-nimara-store": "New to Saleor Merch Store?",
     "create-account": "Create account",
     "i-forgot-my-password": "I forgot my password",
     "sign-in-error": "Sorry, wrong email or password. Please try again.",
     "sign-in": "Log in",
     "log-out": "Log out",
     "already-have-an-account": "Already have an account?",
-    "create-account-agreement": "By clicking “Create account” you agree with <termsOfUse>{termsOfUse}</termsOfUse> and <privacyPolicy>{privacyPolicy}</privacyPolicy> of Nimara Store",
+    "create-account-agreement": "By clicking “Create account” you agree with <termsOfUse>{termsOfUse}</termsOfUse> and <privacyPolicy>{privacyPolicy}</privacyPolicy> of Saleor Merch Store",
     "password-placeholder": "At least {minPasswordLength} signs, digits allowed",
     "confirm-password": "Confirm password",
     "email-placeholder": "e.g. john.doe@mail.com",

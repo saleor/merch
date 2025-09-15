@@ -22,7 +22,7 @@ export class LogInPage extends BasePage {
     });
     this.logInHeader = page.getByRole("heading", { name: "Log in" });
     this.createAccountHeader = page.getByRole("heading", {
-      name: "First time on Nimara Store?",
+      name: "New to Saleor Merch Store?",
     });
     this.showHideIcon = page.getByRole("button", {
       name: "Show/hide password",
