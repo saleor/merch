@@ -9,6 +9,7 @@ export type AttributeType =
   | "PLAIN_TEXT"
   | "REFERENCE"
   | "RICH_TEXT"
+  | "SINGLE_REFERENCE"
   | "SWATCH";
 
 export type AttributeValue = {
