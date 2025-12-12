@@ -11,8 +11,8 @@
     "next": "15.3.8",
     "nextra": "3.3.1",
     "nextra-theme-docs": "3.3.1",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react": "^19.1.4",
+    "react-dom": "^19.1.4"
   },
   "devDependencies": {
     "@nimara/config": "workspace:*",
