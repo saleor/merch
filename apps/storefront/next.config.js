@@ -17,6 +17,7 @@ const isSentryAvailable =
 /** @type {import('next').NextConfig} */
 const nextConfig = withAnalyzer(
   withNextIntl({
+    output: process.env.NEXT_OUTPUT === "standalone" ? "standalone" : undefined,
     redirects: async () => {
       return [
         {

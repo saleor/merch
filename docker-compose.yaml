@@ -1,0 +1,16 @@
+services:
+  storefront:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        - NEXT_PUBLIC_DEFAULT_CHANNEL=${NEXT_PUBLIC_DEFAULT_CHANNEL:-eu}
+        - NEXT_PUBLIC_SALEOR_API_URL=${NEXT_PUBLIC_SALEOR_API_URL}
+        - NEXT_PUBLIC_STRIPE_PUBLIC_KEY=${NEXT_PUBLIC_STRIPE_PUBLIC_KEY}
+
+    environment:
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      SALEOR_APP_TOKEN: ${SALEOR_APP_TOKEN}
+
+    ports:
+      - "127.0.0.1:3001:3000"

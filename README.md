@@ -88,6 +88,31 @@ pnpm run codegen
 
 The app is now running at `http://localhost:3000`.
 
+## Docker Compose
+
+1. Create the required environment variables, e.g., in `.env.secret`:
+
+   ```env
+   # Required:
+   NEXT_PUBLIC_SALEOR_API_URL=https://store.example.com/graphql/
+   NEXT_PUBLIC_STRIPE_PUBLIC_KEY=pk_test_XXX
+   SALEOR_APP_TOKEN=XXX
+   STRIPE_SECRET_KEY=sk_test_XXX
+
+   # Optional:
+   NEXT_PUBLIC_DEFAULT_CHANNEL=eu
+   ```
+
+   Refer to [environment variable guide] for more info.
+
+2. Start the stack using:
+
+   ```shell
+   $ docker-compose --env-file .env.secret up --build
+   ```
+
+[environment variable guide]: ./apps/docs/pages/quickstart/environment-variables.mdx
+
 ## ❤️ Community & Contribution
 
 Join Nimara community on [GitHub Discussions](https://github.com/mirumee/nimara-ecommerce/discussions) and [Discord server](https://discord.gg/w4V3PZxGDj). You can ask questions, report bugs, participate in discussions, share ideas or make feature requests.
