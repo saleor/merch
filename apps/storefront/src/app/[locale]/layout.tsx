@@ -16,7 +16,6 @@ import { clientEnvs } from "@/envs/client";
 import { aspekta } from "@/fonts";
 import { routing } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
-import { type SupportedLocale } from "@/regions/types";
 
 export const metadata: Metadata = {
   title: {
@@ -32,7 +31,7 @@ export default async function LocaleLayout({
   params,
 }: {
   children: ReactNode;
-  params: Promise<{ locale: SupportedLocale }>;
+  params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
 

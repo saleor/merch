@@ -42,3 +42,6 @@ trustPolicyExclude:
   # Trusted publihsing was enabled in 2.0.0. 1.0.40 appears to have been last
   # modified on 2024-12-21
   - 'ua-parser-js@1.0.40'
+
+catalog:
+  next: 15.5.18
