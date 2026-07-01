@@ -34,7 +34,9 @@
     "test:e2e": "dotenv -- turbo run test:e2e",
     "prepare": "husky",
     "format": "pnpm prettier --write '**/*.{js,ts,tsx,json,md}'",
-    "format:check": "pnpm prettier --check '**/*.{js,ts,tsx,json,md}'"
+    "format:check": "pnpm prettier --check '**/*.{js,ts,tsx,json,md}'",
+    "postinstall": "pnpm dlx @socketsecurity/socket-patch apply --silent --ecosystems npm",
+    "dependencies": "pnpm dlx @socketsecurity/socket-patch apply --silent --ecosystems npm"
   },
   "devDependencies": {
     "dotenv-cli": "8.0.0",
