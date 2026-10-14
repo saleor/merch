@@ -1,4 +1,5 @@
 fragment CheckoutProblemsFragment on CheckoutProblem {
+  __typename
   ... on CheckoutLineProblemInsufficientStock {
     __typename
     availableQuantity
