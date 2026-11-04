@@ -2,7 +2,7 @@ import { withSentryConfig } from "@sentry/nextjs";
 import createNextIntlPlugin from "next-intl/plugin";
 import withBundleAnalyzer from "@next/bundle-analyzer";
 
-const withNextIntl = createNextIntlPlugin();
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const withAnalyzer = withBundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
@@ -65,6 +65,9 @@ const nextConfig = withAnalyzer(
       },
     },
     turbopack: {
+      resolveAlias: {
+        "next-intl/config": "./src/i18n/request.ts",
+      },
       rules: {
         "*.svg": {
           loaders: ["@svgr/webpack"],
